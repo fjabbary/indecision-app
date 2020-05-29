@@ -13,16 +13,27 @@ class Counter extends React.Component {
     }
 
     addOne() {
-        this.state.count++
-        console.log(this.state.count)
+        this.setState(prevState => {
+            return {
+                count: prevState.count + 1
+            }
+        })
     }
 
     minusOne() {
-        console.log('Minus one')
+        this.setState(prevState => {
+            return {
+                count: prevState.count - 1
+            }
+        })
     }
 
     reset() {
-        console.log('reset')
+        this.setState(prevState => {
+            return {
+                count: 0
+            }
+        })
     }
 
     render() {
@@ -41,4 +52,6 @@ class Counter extends React.Component {
 
 
 ReactDOM.render(<Counter />, document.getElementById('app'))
+
+// babel src/app.js --out-file=public/scripts/app.js --presets=env,react --watch
 
