@@ -1,6 +1,5 @@
 
 class IndecisionApp extends React.Component {
-
     constructor(props) {
         super(props)
         this.state = {
@@ -32,19 +31,19 @@ class IndecisionApp extends React.Component {
     handleAddOption(option) {
 
         if (this.state.options.indexOf(option) > -1) {
-            this.state(() => {
+            this.setState(() => {
                 return {
                     error: 'Item already exists'
                 }
             })
+        } else {
+            this.setState(prevState => {
+                return {
+                    options: [...prevState.options, option],
+                    error: ''
+                }
+            })
         }
-
-
-        this.setState(prevState => {
-            return {
-                options: [...prevState.options, option]
-            }
-        })
     }
 
     render() {
@@ -59,49 +58,43 @@ class IndecisionApp extends React.Component {
     }
 }
 
-class Header extends React.Component {
-    render() {
-        return (
-            <div>
-                <h1>Indecision</h1>
-                <p>Lorem ipsum dolor sit amet.</p>
-            </div>
-        )
-    }
+const Header = () => {
+    return (
+        <div>
+            <h1>Indecision</h1>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </div>
+    )
 }
 
-class Action extends React.Component {
-    render() {
-        return (
-            <button onClick={this.props.handlePick} disabled={!this.props.hasOptions}>What should I do?</button>
-        )
-    }
+const Action = (props) => {
+    return (
+        <button onClick={props.handlePick} disabled={!props.hasOptions}>What should I do?</button>
+    )
 }
 
-class Options extends React.Component {
-    render() {
-        return (
-            <div>
-                <button onClick={this.props.handleRemoveAll}>Remove All</button>
-                {this.props.options.map((item, index) => <Option key={index} option={item} />)}
-            </div>
-        )
-    }
+const Options = (props) => {
+    return (
+        <div>
+            <button onClick={props.handleRemoveAll}>Remove All</button>
+            {props.options.map((item, index) => <Option key={index} option={item} />)}
+        </div>
+    )
 }
 
-class Option extends React.Component {
-    render() {
-        const { option } = this.props;
-        return (
-            <p>{option}</p>
-        )
-    }
+const Option = (props) => {
+    return (
+        <p>{props.option}</p>
+    )
 }
+
 
 class AddOption extends React.Component {
     constructor(props) {
         super(props)
         this.onAddOption = this.onAddOption.bind(this);
+
+        console.log(this.props)
     }
 
     onAddOption(e) {
