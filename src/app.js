@@ -10,14 +10,37 @@ class IndecisionApp extends React.Component {
         this.handleRemoveAll = this.handleRemoveAll.bind(this)
         this.handlePick = this.handlePick.bind(this)
         this.handleAddOption = this.handleAddOption.bind(this)
+        this.handleRemove = this.handleRemove.bind(this)
+    }
+
+    componentDidMount() {
+        console.log('component did mount')
+        const options = JSON.parse(localStorage.getItem('options'))
+
+        if (options) {
+            this.setState(() => ({ options }))
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.options.length !== this.state.options.length) {
+            const json = JSON.stringify(this.state.options)
+            localStorage.setItem('options', json)
+        }
+    }
+
+    componentWillUnmount() {
+        console.log('component Will Unmount')
     }
 
     handleRemoveAll() {
-        this.setState(() => {
-            return {
-                options: []
-            }
-        })
+        this.setState(() => ({ options: [] }))
+    }
+
+    handleRemove(option) {
+        this.setState((prevState) => ({
+            options: prevState.options.filter(item => item !== option)
+        }))
     }
 
     handlePick() {
@@ -31,18 +54,13 @@ class IndecisionApp extends React.Component {
     handleAddOption(option) {
 
         if (this.state.options.indexOf(option) > -1) {
-            this.setState(() => {
-                return {
-                    error: 'Item already exists'
-                }
-            })
+            this.setState(() => ({ error: 'Item already exists' }))
+
         } else {
-            this.setState(prevState => {
-                return {
-                    options: [...prevState.options, option],
-                    error: ''
-                }
-            })
+            this.setState((prevState) => ({
+                options: [...prevState.options, option],
+                error: ''
+            }))
         }
     }
 
@@ -51,7 +69,7 @@ class IndecisionApp extends React.Component {
             <div>
                 <Header />
                 <Action hasOptions={this.state.options.length > 0} handlePick={this.handlePick} />
-                <Options options={this.state.options} handleRemoveAll={this.handleRemoveAll} />
+                <Options options={this.state.options} handleRemoveAll={this.handleRemoveAll} handleRemove={this.handleRemove} />
                 <AddOption addOption={this.handleAddOption} error={this.state.error} />
             </div>
         )
@@ -77,14 +95,17 @@ const Options = (props) => {
     return (
         <div>
             <button onClick={props.handleRemoveAll}>Remove All</button>
-            {props.options.map((item, index) => <Option key={index} option={item} />)}
+            {props.options.map((item, index) => <Option key={index} option={item} handleRemove={props.handleRemove} />)}
         </div>
     )
 }
 
 const Option = (props) => {
     return (
-        <p>{props.option}</p>
+        <div>
+            <span>{props.option}</span>
+            <button onClick={() => { props.handleRemove(props.option) }}>Remove</button>
+        </div>
     )
 }
 
@@ -93,8 +114,6 @@ class AddOption extends React.Component {
     constructor(props) {
         super(props)
         this.onAddOption = this.onAddOption.bind(this);
-
-        console.log(this.props)
     }
 
     onAddOption(e) {
